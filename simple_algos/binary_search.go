@@ -1,6 +1,8 @@
 package simple_algos
 
-func BinarySearch(slice []int, target int) int {
+import "golang.org/x/exp/constraints"
+
+func BinarySearch[T constraints.Ordered](slice []T, target T) int {
 	left := 0
 	right := len(slice) - 1
 	for left <= right {
