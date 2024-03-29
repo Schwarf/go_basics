@@ -1,6 +1,7 @@
 package test_simple_algos
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/Schwarf/go_basics/simple_algos"
@@ -18,10 +19,9 @@ func TestMergeSearch(t *testing.T) {
 
 	for _, tt := range tests {
 		result := simple_algos.MergeSort(tt.input)
-		if result != tt.expected {
-			t.Errorf("MergeSort(%v) != %v;", tt.input, tt.expected)
+		if !reflect.DeepEqual(result, tt.expected) {
+			t.Errorf("MergeSort error, not equal %v != %v", result, tt.expected)
 		}
-
 	}
 
 }

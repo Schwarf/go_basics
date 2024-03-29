@@ -8,7 +8,7 @@ import (
 
 func TestBinarySearch(t *testing.T) {
 	tests := []struct {
-		slice    []int
+		input    []int
 		target   int
 		expected int
 	}{
@@ -20,9 +20,9 @@ func TestBinarySearch(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result := simple_algos.BinarySearch(tt.slice, tt.target)
+		result := simple_algos.BinarySearch(tt.input, tt.target)
 		if result != tt.expected {
-			t.Errorf("Merge(%v, %d) = %d; want %d", tt.input, tt.expected)
+			t.Errorf("BinarySearch(%v, %d) = %d; want %d", tt.input, tt.target, result, tt.expected)
 		}
 	}
 }
