@@ -1,6 +1,6 @@
 package simple_algos
 
-import "fmt"
+import "errors"
 
 type MinHeap struct {
 	slice []int
@@ -26,25 +26,24 @@ func parent(index int) int {
 	return (index - 1) / 2
 }
 
-func (heap *MinHeap) Pop() int {
+func (heap *MinHeap) Pop() (int, error) {
 	if len(heap.slice) == 0 {
-		fmt.Println("Heap is empty")
-		return -1
+		return 0, errors.New("MinHeap is empty")
 	}
 
 	minimum := heap.slice[0]
 	heap.slice[0] = heap.slice[len(heap.slice)-1]
 	heap.slice = heap.slice[:len(heap.slice)-1]
 	heap.heapifyDown(0)
-	return minimum
+	return minimum, nil
 }
 
-func (heap *MinHeap) Top() int {
+func (heap *MinHeap) Top() (int, error) {
 	if len(heap.slice) == 0 {
-		fmt.Println("Heap is empty")
-		return -1
+
+		return 0, errors.New("MinHeap is empty")
 	}
-	return heap.slice[0]
+	return heap.slice[0], nil
 }
 
 func (heap *MinHeap) heapifyDown(index int) {

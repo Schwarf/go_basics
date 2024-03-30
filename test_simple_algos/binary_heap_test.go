@@ -21,3 +21,10 @@ func TestInsertAndRemove(t *testing.T) {
 		}
 	}
 }
+
+func TestRemoveEmpty(t *testing.T) {
+	heap := simple_algos.MinHeap{}
+	if heap.Pop() != -1 {
+		t.Errorf("Empty heap does not return -1.")
+	}
+}
