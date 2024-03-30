@@ -39,6 +39,14 @@ func (heap *MinHeap) Pop() int {
 	return minimum
 }
 
+func (heap *MinHeap) Top() int {
+	if len(heap.slice) == 0 {
+		fmt.Println("Heap is empty")
+		return -1
+	}
+	return heap.slice[0]
+}
+
 func (heap *MinHeap) heapifyDown(index int) {
 	lastIndex := len(heap.slice) - 1
 	leftIndex, rightIndex := leftChild(index), rightChild(index)
