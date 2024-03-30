@@ -16,7 +16,7 @@ func TestInsertAndRemove(t *testing.T) {
 
 	expectedOrder := []int{1, 2, 3, 5, 8}
 	for _, expected := range expectedOrder {
-		if heap.Pop() != expected {
+		if value, error := heap.Pop(); error != nil || expected != value {
 			t.Errorf("Heap did not remove elements in expected order.")
 		}
 	}
@@ -24,7 +24,7 @@ func TestInsertAndRemove(t *testing.T) {
 
 func TestRemoveEmpty(t *testing.T) {
 	heap := simple_algos.MinHeap{}
-	if heap.Pop() != -1 {
+	if value, error := heap.Pop(); error == nil || value != 0 {
 		t.Errorf("Empty heap does not return -1.")
 	}
 }
