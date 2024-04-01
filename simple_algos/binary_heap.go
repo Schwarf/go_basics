@@ -22,6 +22,55 @@ func (Greater[T]) Compare(a, b T) bool {
 	return a > b
 }
 
+type BinaryHeap[T constraints.Ordered] struct {
+	elements   []T
+	size       int
+	comparator Comparator[T]
+}
+
+func (heap *BinaryHeap[T]) parent(index int) int {
+	return (index - 1) / 2
+}
+
+func (heap *BinaryHeap[T]) Pop() (T, error) {
+
+	if len(heap.elements) == 0 {
+		return 0, errors.New("MinHeap is empty")
+	}
+
+	minimum := heap.elements[0]
+	heap.elements[0] = heap.elements[len(heap.elements)-1]
+	heap.elements = heap.elements[:len(heap.elements)-1]
+	heap.heapifyDown(0)
+	return minimum, nil
+
+}
+
+func (heap *BinaryHeap[T]) heapifyDown(index int) {
+	lastIndex := len(heap.elements) - 1
+	leftIndex, rightIndex := leftChild(index), rightChild(index)
+	indexToCompare := 0
+
+	for leftIndex <= lastIndex {
+		if leftIndex == lastIndex { // When left child is the only child
+			indexToCompare = leftIndex
+		} else if heap.elements[leftIndex] < heap.elements[rightIndex] {
+			indexToCompare = leftIndex
+		} else {
+			indexToCompare = rightIndex
+		}
+
+		if heap.comparator.Compare(heap.elements[indexToCompare], heap.elements[index]) {
+			heap.swap(index, indexToCompare)
+			index = indexToCompare
+			leftIndex, rightIndex = leftChild(index), rightChild(index)
+		} else {
+			return
+		}
+	}
+
+}
+
 type MinHeap struct {
 	slice []int
 }
