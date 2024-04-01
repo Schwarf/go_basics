@@ -1,6 +1,26 @@
 package simple_algos
 
-import "errors"
+import (
+	"errors"
+
+	"golang.org/x/exp/constraints"
+)
+
+type Comparator[T constraints.Ordered] interface {
+	Compare(a, b T) bool
+}
+
+type Less[T constraints.Ordered] struct{}
+
+func (Less[T]) Compare(a, b T) bool {
+	return a < b
+}
+
+type Greater[T constraints.Ordered] struct{}
+
+func (Greater[T]) Compare(a, b T) bool {
+	return a > b
+}
 
 type MinHeap struct {
 	slice []int
