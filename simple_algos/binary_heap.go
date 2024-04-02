@@ -34,11 +34,12 @@ func (heap *BinaryHeap[T]) parent(index int) int {
 
 func (heap *BinaryHeap[T]) Pop() (T, error) {
 
+	var minimum T
 	if len(heap.elements) == 0 {
-		return 0, errors.New("MinHeap is empty")
+		return minimum, errors.New("Binary heap is empty")
 	}
 
-	minimum := heap.elements[0]
+	minimum = heap.elements[0]
 	heap.elements[0] = heap.elements[len(heap.elements)-1]
 	heap.elements = heap.elements[:len(heap.elements)-1]
 	heap.heapifyDown(0)
@@ -69,6 +70,17 @@ func (heap *BinaryHeap[T]) heapifyDown(index int) {
 		}
 	}
 
+}
+
+func (heap *BinaryHeap[T]) swap(i, j int) {
+	heap.elements[i], heap.elements[j] = heap.elements[j], heap.elements[i]
+}
+
+func (heap *BinaryHeap[T]) heapifyUp(index int) {
+	for heap.comparator.Compare(heap.elements[index], heap.elements[heap.parent(index)]) {
+		heap.swap(parent(index), index)
+		index = parent(index)
+	}
 }
 
 type MinHeap struct {
