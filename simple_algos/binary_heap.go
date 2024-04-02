@@ -24,8 +24,14 @@ func (Greater[T]) Compare(a, b T) bool {
 
 type BinaryHeap[T constraints.Ordered] struct {
 	elements   []T
-	size       int
 	comparator Comparator[T]
+}
+
+func NewBinaryHeap[T constraints.Ordered](compare Comparator[T]) *BinaryHeap[T] {
+	return &BinaryHeap[T]{
+		elements:   make([]T, 0),
+		comparator: compare,
+	}
 }
 
 func (heap *BinaryHeap[T]) parent(index int) int {
