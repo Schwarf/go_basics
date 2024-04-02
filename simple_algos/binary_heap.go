@@ -76,6 +76,11 @@ func (heap *BinaryHeap[T]) swap(i, j int) {
 	heap.elements[i], heap.elements[j] = heap.elements[j], heap.elements[i]
 }
 
+func (heap *BinaryHeap[T]) Insert(key T) {
+	heap.elements = append(heap.elements, key)
+	heap.heapifyUp(len(heap.elements) - 1)
+}
+
 func (heap *BinaryHeap[T]) heapifyUp(index int) {
 	for heap.comparator.Compare(heap.elements[index], heap.elements[heap.parent(index)]) {
 		heap.swap(parent(index), index)
