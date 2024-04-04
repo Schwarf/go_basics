@@ -40,16 +40,27 @@ func (heap *BinaryHeap[T]) parent(index int) int {
 
 func (heap *BinaryHeap[T]) Pop() (T, error) {
 
-	var minimum T
+	var extremum T
 	if len(heap.elements) == 0 {
-		return minimum, errors.New("Binary heap is empty")
+		return extremum, errors.New("BINARY HEAP IS EMPTY")
 	}
 
-	minimum = heap.elements[0]
+	extremum = heap.elements[0]
 	heap.elements[0] = heap.elements[len(heap.elements)-1]
 	heap.elements = heap.elements[:len(heap.elements)-1]
 	heap.heapifyDown(0)
-	return minimum, nil
+	return extremum, nil
+
+}
+
+func (heap *BinaryHeap[T]) Top() (T, error) {
+
+	var extremum T
+	if len(heap.elements) == 0 {
+		return extremum, errors.New("BINARY HEAP IS EMPTY")
+	}
+	extremum = heap.elements[0]
+	return extremum, nil
 
 }
 
