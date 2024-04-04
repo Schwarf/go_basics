@@ -78,7 +78,29 @@ func TestMaxHeapWithRandomNumbers(t *testing.T) {
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(randomNumbers)))
 	for _, expected := range randomNumbers {
-		extracted, err := maxHeap.Pop() // Implement Pop according to your heap
+		extracted, err := maxHeap.Pop()
+		if err != nil {
+			fmt.Println("Error extracting from heap:", err)
+			break
+		}
+		if extracted != expected {
+			fmt.Println("Mismatch! Expected:", expected, "Got:", extracted)
+			break
+		}
+	}
+
+}
+
+func TestMinHeapWithRandomNumbers(t *testing.T) {
+	randomNumbers := make([]int, 1200)
+	minHeap := simple_algos.NewBinaryHeap[int](simple_algos.Less[int]{})
+	for i := range randomNumbers {
+		randomNumbers[i] = rand.Intn(10000)
+		minHeap.Insert(int(randomNumbers[i]))
+	}
+	sort.Ints(randomNumbers)
+	for _, expected := range randomNumbers {
+		extracted, err := minHeap.Pop()
 		if err != nil {
 			fmt.Println("Error extracting from heap:", err)
 			break
