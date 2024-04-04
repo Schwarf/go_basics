@@ -1,7 +1,11 @@
 package test_simple_algos
 
 import (
+	"fmt"
 	"testing"
+
+	"math/rand"
+	"sort"
 
 	"github.com/Schwarf/go_basics/simple_algos"
 )
@@ -61,6 +65,28 @@ func TestPopMinHeap(t *testing.T) {
 			t.Errorf("Heap did not remove elements in expected order. Expected: %.2d, Is: %.2d", expected, value)
 		}
 
+	}
+
+}
+
+func TestMaxHeapWithRandomNumbers(t *testing.T) {
+	randomNumbers := make([]int, 1000)
+	maxHeap := simple_algos.NewBinaryHeap[int](simple_algos.Greater[int]{})
+	for i := range randomNumbers {
+		randomNumbers[i] = rand.Intn(10000)
+		maxHeap.Insert(int(randomNumbers[i]))
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(randomNumbers)))
+	for _, expected := range randomNumbers {
+		extracted, err := maxHeap.Pop() // Implement Pop according to your heap
+		if err != nil {
+			fmt.Println("Error extracting from heap:", err)
+			break
+		}
+		if extracted != expected {
+			fmt.Println("Mismatch! Expected:", expected, "Got:", extracted)
+			break
+		}
 	}
 
 }
