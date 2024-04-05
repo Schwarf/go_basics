@@ -48,7 +48,7 @@ func (heap *BinaryHeap[T]) Pop() (T, error) {
 	extremum = heap.elements[0]
 	heap.elements[0] = heap.elements[len(heap.elements)-1]
 	heap.elements = heap.elements[:len(heap.elements)-1]
-	heap.heapifyDown(0)
+	heap.heapifyDown()
 	return extremum, nil
 
 }
@@ -64,23 +64,26 @@ func (heap *BinaryHeap[T]) Top() (T, error) {
 
 }
 
-func (heap *BinaryHeap[T]) heapifyDown(index int) {
+func (heap *BinaryHeap[T]) heapifyDown() {
+	// we start from the top
 	lastIndex := len(heap.elements) - 1
-	leftIndex, rightIndex := leftChild(index), rightChild(index)
-	indexToCompare := 0
+	index := 0
+	leftIndex, rightIndex := 1, 2
+	childIndexToCompare := 0
 
 	for leftIndex <= lastIndex {
+
 		if leftIndex == lastIndex { // When left child is the only child
-			indexToCompare = leftIndex
-		} else if heap.comparator.Compare(heap.elements[leftIndex], heap.elements[rightIndex]) {
-			indexToCompare = leftIndex
-		} else {
-			indexToCompare = rightIndex
+			childIndexToCompare = leftIndex
+		} else if heap.comparator.Compare(heap.elements[leftIndex], heap.elements[rightIndex]) { // When left child is less/greater (MIN/MAX CASE)than right child
+			childIndexToCompare = leftIndex
+		} else { // When right child is less/greater than left child
+			childIndexToCompare = rightIndex
 		}
 
-		if heap.comparator.Compare(heap.elements[indexToCompare], heap.elements[index]) {
-			heap.swap(index, indexToCompare)
-			index = indexToCompare
+		if heap.comparator.Compare(heap.elements[childIndexToCompare], heap.elements[index]) { // When child is less/greater (min/max case) than element, swap ...
+			heap.swap(index, childIndexToCompare)
+			index = childIndexToCompare
 			leftIndex, rightIndex = leftChild(index), rightChild(index)
 		} else {
 			return
@@ -95,10 +98,12 @@ func (heap *BinaryHeap[T]) swap(i, j int) {
 
 func (heap *BinaryHeap[T]) Insert(key T) {
 	heap.elements = append(heap.elements, key)
-	heap.heapifyUp(len(heap.elements) - 1)
+	heap.heapifyUp()
 }
 
-func (heap *BinaryHeap[T]) heapifyUp(index int) {
+func (heap *BinaryHeap[T]) heapifyUp() {
+	// When element is less/greater than the parent move it up
+	index := len(heap.elements) - 1
 	for heap.comparator.Compare(heap.elements[index], heap.elements[heap.parent(index)]) {
 		heap.swap(parent(index), index)
 		index = parent(index)
