@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -38,8 +39,25 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func homepage(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "Homepage")
+
+}
+
+func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "Hello World")
+}
+
+func setupRoutes() {
+	http.HandleFunc("/", homepage)
+	http.HandleFunc("/ws", websocketEndpoint)
+}
+
 func main() {
-	http.HandleFunc("/echo", echoHandler)
-	fmt.Println("Running server ... ")
-	http.ListenAndServe(":8080", nil)
+	// http.HandleFunc("/echo", echoHandler)
+	// fmt.Println("Running server ... ")
+	// http.ListenAndServe(":8080", nil)
+	fmt.Println("Hello")
+	setupRoutes()
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
