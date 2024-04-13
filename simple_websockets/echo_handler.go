@@ -44,22 +44,36 @@ func homepage(writer http.ResponseWriter, request *http.Request) {
 
 func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 	upgrader.CheckOrigin = func(request *http.Request) bool { return true }
-	fmt.Fprintf(writer, "Hello World")
-	websocket, err := upgrader.Upgrade(writer, request, nil)
+	connection, err := upgrader.Upgrade(writer, request, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade to WebSocket: %v", err)
 		return
 	}
-	defer websocket.Close()
-
+	defer connection.Close()
 	log.Println("Client connected")
+	// for {
+	// 	_, message, err := connection.ReadMessage()
+	// 	if err != nil {
+	// 		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+	// 			log.Printf("error: %v", err)
+	// 		}
+	// 		break
+	// 	}
+	// 	log.Printf("Received: %s", message)
 
-	err = websocket.WriteMessage(1, []byte("Hi Client!"))
+	// 	// Echo the message back
+	// 	if err := connection.WriteMessage(websocket.TextMessage, message); err != nil {
+	// 		log.Println("write:", err)
+	// 		break
+	// 	}
+	// }
+
+	err = connection.WriteMessage(1, []byte("Hi Client!"))
 	if err != nil {
 		log.Println(err)
 	}
 
-	reader(websocket)
+	reader(connection)
 }
 
 func reader(connection *websocket.Conn) {
