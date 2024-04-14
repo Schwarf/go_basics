@@ -6,23 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Go WebSocket Tutorial</title>
+    <style>
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 5px;
+            overflow-y: scroll;
+        }
+    </style>
 </head>
 
 <body>
-    <h2>Hello World</h2>
-
+    <h2>WebSocket Chat</h2>
+    <div id="messages"> </div>
+    <input type="text" id="messageInput" placeholder="Type a message ...">
+    <button onclick="sendMessage()">Send</button>
     <script>
         let socket = new WebSocket("ws://127.0.0.1:8080/ws");
         console.log("Attempting Connection...");
 
         socket.onopen = () => {
             console.log("Successfully Connected");
-            socket.send("Hi From the Client!")
+            sendMessage();
+        };
+
+        socket.onmessage = event => {
+
         };
 
         socket.onclose = event => {
             console.log("Socket Closed Connection: ", event);
-            socket.send("Client Closed!")
         };
 
         socket.onerror = error => {
