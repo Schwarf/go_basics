@@ -26,33 +26,43 @@ func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	defer connection.Close()
+
+	mutex.Lock()
+	clients[connection] = true
+	mutex.Unlock()
 	log.Println("Client connected")
-
-	err = connection.WriteMessage(1, []byte("Hi Client!"))
-	if err != nil {
-		log.Println(err)
-	}
-
-	reader(connection)
-}
-
-func reader(connection *websocket.Conn) {
+	defer func() {
+		log.Println("Client disconnected")
+		mutex.Lock()
+		delete(clients, connection)
+		mutex.Unlock()
+	}()
 	for {
-		messgaeType, p, err := connection.ReadMessage()
+		messageType, message, err := connection.ReadMessage()
 		if err != nil {
 			log.Println(err)
-			return
+			break
 		}
-		fmt.Println(string(p))
-
-		if err := connection.WriteMessage(messgaeType, p); err != nil {
-			log.Println(err)
-			return
-		}
-
+		log.Printf("Received message from client: %s\n", message)
+		broadcast(messageType, message)
 	}
-
 }
+func homepage(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "Welcome to the Schwarf's webSocket chat server!")
+}
+
+func broadcast(messageType int, message []byte) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	for client := range clients {
+		if err := client.WriteMessage(messageType, message); err != nil {
+			log.Printf("Error wrting to WebSocket: %v", err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
+}
+
 func setupRoutes() {
 	http.HandleFunc("/", homepage)
 	http.HandleFunc("/ws", websocketEndpoint)
