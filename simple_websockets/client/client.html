@@ -32,7 +32,11 @@
         };
 
         socket.onmessage = event => {
-
+            console.log("Message from server: ", event.data);
+            const messages = document.getElementById('messages');
+            const message = document.createElement('div');
+            message.textContent = event.data;
+            messages.appendChild(message);
         };
 
         socket.onclose = event => {
