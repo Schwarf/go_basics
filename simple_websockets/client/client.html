@@ -46,6 +46,15 @@
         socket.onerror = error => {
             console.log("Socket Error: ", error);
         };
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value || "Hi From the Client!";
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+                console.log("Message sent: " + message);
+                input.value = ''; // Clear the input after sending
+            }
+        }
 
     </script>
 </body>
