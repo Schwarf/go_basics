@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -15,8 +16,14 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-var clients = make(map[*websocket.Conn]bool)
+type Client struct {
+	ID         string
+	Connection *websocket.Conn
+}
+
+var clients = make(map[*Client]bool)
 var mutex = sync.Mutex{}
+var idCounter = 0
 
 func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 
@@ -27,14 +34,18 @@ func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 	}
 	defer connection.Close()
 
+	idCounter++
+	clientID := fmt.Sprintf("Client-%d", idCounter)
+	client := &Client{ID: clientID, Connection: connection}
+
 	mutex.Lock()
-	clients[connection] = true
+	clients[client] = true
 	mutex.Unlock()
-	log.Println("Client connected")
+	log.Printf("Client %s connected", client.ID)
 	defer func() {
-		log.Println("Client disconnected")
+		log.Printf("Client %s disconnected", client.ID)
 		mutex.Lock()
-		delete(clients, connection)
+		delete(clients, client)
 		mutex.Unlock()
 	}()
 	for {
@@ -43,7 +54,7 @@ func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 			log.Println(err)
 			break
 		}
-		log.Printf("Received message from client: %s\n", message)
+		log.Printf("Received message from client %s at s%: %s\n", client.ID, time.Now().Format(time.RFC3339), message)
 		broadcast(messageType, message)
 	}
 }
@@ -55,9 +66,9 @@ func broadcast(messageType int, message []byte) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	for client := range clients {
-		if err := client.WriteMessage(messageType, message); err != nil {
+		if err := client.Connection.WriteMessage(messageType, message); err != nil {
 			log.Printf("Error wrting to WebSocket: %v", err)
-			client.Close()
+			client.Connection.Close()
 			delete(clients, client)
 		}
 	}
