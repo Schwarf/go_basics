@@ -4,11 +4,37 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
+	"github.com/Schwarf/go_basics/simple_websockets/encryption"
+
 	"github.com/gorilla/websocket"
 )
+
+func storeMessage(clientID string, message []byte, timestamp string, key []byte) error {
+	plainText := fmt.Sprintf("Client: %s, Timestamp: %s, Message: %s\n", clientID, timestamp, message)
+	encryptedMessage, err := encryption.Encrypt(plainText, key)
+	if err != nil {
+		log.Printf("Encryption did not work! Error: %v", err)
+		return err
+	}
+
+	file, err := os.OpenFile("messages.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("Opening file did not work! Error: %v", err)
+		return err
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(encryptedMessage + "\n"); err != nil {
+		log.Printf("Writing string did not work! Error: %v", err)
+		return err
+	}
+
+	return nil
+}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -48,13 +74,20 @@ func websocketEndpoint(writer http.ResponseWriter, request *http.Request) {
 		delete(clients, client)
 		mutex.Unlock()
 	}()
+
+	encryptionKey := []byte("your-32-byte-long-key-here123456")
+
 	for {
 		messageType, message, err := connection.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			break
 		}
+		timestamp := time.Now().Format(time.RFC3339)
 		log.Printf("Received message from client %s at s%: %s\n", client.ID, time.Now().Format(time.RFC3339), message)
+		if err := storeMessage(clientID, message, timestamp, encryptionKey); err != nil {
+			log.Printf("Failed to store message! Error: %v", err)
+		}
 		broadcast(messageType, message)
 	}
 }
