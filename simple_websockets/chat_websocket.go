@@ -16,6 +16,8 @@ import (
 func storeMessage(clientID string, message []byte, timestamp string, key []byte) error {
 	plainText := fmt.Sprintf("Client: %s, Timestamp: %s, Message: %s\n", clientID, timestamp, message)
 	encryptedMessage, err := encryption.Encrypt(plainText, key)
+	decryptedMessage, err := encryption.Decrypt(encryptedMessage, key)
+	log.Printf("Decrypted message: %s", decryptedMessage)
 	if err != nil {
 		log.Printf("Encryption did not work! Error: %v", err)
 		return err
