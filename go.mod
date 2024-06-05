@@ -7,4 +7,7 @@ require (
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 )
 
-require golang.org/x/net v0.24.0 // indirect
+require (
+	github.com/lib/pq v1.10.9 // indirect
+	golang.org/x/net v0.24.0 // indirect
+)

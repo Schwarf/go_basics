@@ -10,6 +10,8 @@ import (
 
 	"github.com/Schwarf/go_basics/simple_websockets/encryption"
 
+	create_db "github.com/Schwarf/go_basics/simple_websockets/sql"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -118,6 +120,10 @@ func main() {
 	// http.HandleFunc("/echo", echoHandler)
 	// fmt.Println("Running server ... ")
 	// http.ListenAndServe(":8080", nil)
+	_, err := create_db.SetupDatabase()
+	if err != nil {
+		log.Printf("Database connection failed! %v", err)
+	}
 	fmt.Println("Hello")
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
