@@ -35,7 +35,7 @@ func loadConfig(file string) (Config, error) {
 	return config, err
 }
 
-func SetupDatabase() (*sql.DB, error) {
+func ConnectToDatabase() (*sql.DB, error) {
 	var filePath string = "/home/andreas/Documents/database_access/postgres_config.json"
 	config, err := loadConfig(filePath)
 	if err != nil {

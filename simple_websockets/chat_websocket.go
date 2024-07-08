@@ -120,7 +120,7 @@ func main() {
 	// http.HandleFunc("/echo", echoHandler)
 	// fmt.Println("Running server ... ")
 	// http.ListenAndServe(":8080", nil)
-	_, err := create_db.SetupDatabase()
+	_, err := create_db.ConnectToDatabase()
 	if err != nil {
 		log.Printf("Database connection failed! %v", err)
 	}
