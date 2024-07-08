@@ -43,24 +43,24 @@ func SetupDatabase() (*sql.DB, error) {
 		return nil, err
 	}
 	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Host, config.Port, config.User, config.Password, config.DBName)
-	log.Printf("Hallo1")
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Hallo2")
 	createTableSQL := `
     CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
+        chatId TEXT NOT NULL,
         sender TEXT NOT NULL,
-        timestamp TEXT NOT NULL,
-        encrypted_message TEXT NOT NULL
+        text TEXT NOT NULL,
+        timestamp_ms BIGINT NOT NULL,
+        hash TEXT NOT NULL,
+        receivedByClients BOOLEAN DEFAULT FALSE
     );`
 
 	_, err = db.Exec(createTableSQL)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Hallo3")
 	return db, nil
 }
