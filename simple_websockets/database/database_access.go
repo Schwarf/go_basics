@@ -18,6 +18,14 @@ type Config struct {
 	DBName   string `json:"dbname"`
 }
 
+type Message struct {
+	chatId       string
+	sender       string
+	text         string
+	timestamp_ms int64
+	hash         string
+}
+
 func loadConfig(file string) (Config, error) {
 	var config Config
 	configFile, err := os.Open(file)
@@ -53,6 +61,8 @@ func CreateMessagesTable(db *sql.DB) error {
 	}
 	return nil
 }
+
+//func WriteMessage(db *sql.DB, chatId string, text string, sender string) error {}
 
 func ConnectToDatabase() (*sql.DB, error) {
 	var filePath string = "/home/andreas/Documents/database_access/postgres_config.json"

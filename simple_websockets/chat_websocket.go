@@ -10,7 +10,7 @@ import (
 
 	"github.com/Schwarf/go_basics/simple_websockets/encryption"
 
-	create_db "github.com/Schwarf/go_basics/simple_websockets/sql"
+	create_db "github.com/Schwarf/go_basics/simple_websockets/database"
 
 	"github.com/gorilla/websocket"
 )
