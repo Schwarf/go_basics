@@ -2,22 +2,47 @@ package create_db
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "bambi"
-	password = "SchomerSchabatt"
-	dbname   = "chat_server"
-)
+type Config struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DBName   string `json:"dbname"`
+}
+
+func loadConfig(file string) (Config, error) {
+	var config Config
+	configFile, err := os.Open(file)
+	if err != nil {
+		log.Printf("Error opening config file: %v", err)
+		return config, err
+	}
+	defer configFile.Close()
+	jsonParser := json.NewDecoder(configFile)
+	err = jsonParser.Decode(&config)
+	if err != nil {
+		log.Printf("Error parsing config file: %v", err)
+		return config, err
+	}
+	return config, err
+}
 
 func SetupDatabase() (*sql.DB, error) {
-	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	var filePath string = "/home/andreas/Documents/database_access/postgres_config.json"
+	config, err := loadConfig(filePath)
+	if err != nil {
+		log.Println("Error loading config file")
+		return nil, err
+	}
+	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Host, config.Port, config.User, config.Password, config.DBName)
 	log.Printf("Hallo1")
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
