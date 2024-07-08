@@ -35,18 +35,7 @@ func loadConfig(file string) (Config, error) {
 	return config, err
 }
 
-func ConnectToDatabase() (*sql.DB, error) {
-	var filePath string = "/home/andreas/Documents/database_access/postgres_config.json"
-	config, err := loadConfig(filePath)
-	if err != nil {
-		log.Println("Error loading config file")
-		return nil, err
-	}
-	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Host, config.Port, config.User, config.Password, config.DBName)
-	db, err := sql.Open("postgres", connectionString)
-	if err != nil {
-		return nil, err
-	}
+func CreateMessagesTable(db *sql.DB) error {
 	createTableSQL := `
     CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -58,8 +47,24 @@ func ConnectToDatabase() (*sql.DB, error) {
         receivedByClients BOOLEAN DEFAULT FALSE
     );`
 
-	_, err = db.Exec(createTableSQL)
+	_, err := db.Exec(createTableSQL)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ConnectToDatabase() (*sql.DB, error) {
+	var filePath string = "/home/andreas/Documents/database_access/postgres_config.json"
+	config, err := loadConfig(filePath)
+	if err != nil {
+		log.Println("Error loading config file")
+		return nil, err
+	}
+	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Host, config.Port, config.User, config.Password, config.DBName)
+	db, err := sql.Open("postgres", connectionString)
+	if err != nil {
+
 		return nil, err
 	}
 	return db, nil

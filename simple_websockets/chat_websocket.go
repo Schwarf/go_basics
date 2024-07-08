@@ -120,10 +120,15 @@ func main() {
 	// http.HandleFunc("/echo", echoHandler)
 	// fmt.Println("Running server ... ")
 	// http.ListenAndServe(":8080", nil)
-	_, err := create_db.ConnectToDatabase()
+	db, err := create_db.ConnectToDatabase()
 	if err != nil {
 		log.Printf("Database connection failed! %v", err)
 	}
+	err = create_db.CreateMessagesTable(db)
+	if err != nil {
+		log.Printf("Creation of table failed! %v", err)
+	}
+
 	fmt.Println("Hello")
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
