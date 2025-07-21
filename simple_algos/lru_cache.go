@@ -19,3 +19,12 @@ func New[Key comparable, Value any](capacity int) *LRUCache[Key, Value] {
 		cache:    make(map[Key]*list.Element),
 		list:     list.New()}
 }
+
+func (lruCache *LRUCache[Key, Value]) Get(key Key) (Value, bool) {
+	if element, ok := lruCache.cache[key]; ok {
+		lruCache.list.MoveToFront(element)
+		return element.Value.(lruCacheEntry[Key, Value]).value, true
+	}
+	var zero Value // is nil (where nil is allowed) and 0 (false) for others like int(bool)
+	return zero, false
+}
