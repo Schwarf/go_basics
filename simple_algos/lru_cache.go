@@ -13,7 +13,7 @@ type lruCacheEntry[Key comparable, Value any] struct {
 	value Value
 }
 
-func New[Key comparable, Value any](capacity int) *LRUCache[Key, Value] {
+func NewLRUCache[Key comparable, Value any](capacity int) *LRUCache[Key, Value] {
 	return &LRUCache[Key, Value]{
 		capacity: capacity,
 		cache:    make(map[Key]*list.Element),
@@ -47,4 +47,8 @@ func (lruCache *LRUCache[Key, Value]) Put(key Key, value Value) {
 	// push new element to front
 	element := lruCache.list.PushFront(lruCacheEntry[Key, Value]{key, value})
 	lruCache.cache[key] = element
+}
+
+func (lruCache *LRUCache[Key, Value]) Len() int {
+	return lruCache.list.Len()
 }
