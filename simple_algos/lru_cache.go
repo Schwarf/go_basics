@@ -49,6 +49,21 @@ func (lruCache *LRUCache[Key, Value]) Put(key Key, value Value) {
 	lruCache.cache[key] = element
 }
 
+func (lruCache *LRUCache[Key, Value]) Remove(key Key) {
+	if element, ok := lruCache.cache[key]; ok {
+		lruCache.list.Remove(element)
+		delete(lruCache.cache, key)
+	}
+}
+
+func (lruCache *LRUCache[Key, Value]) Peek(key Key) (Value, bool) {
+	if element, ok := lruCache.cache[key]; ok {
+		return element.Value.(lruCacheEntry[Key, Value]).value, true
+	}
+	var zero Value
+	return zero, false
+}
+
 func (lruCache *LRUCache[Key, Value]) Len() int {
 	return lruCache.list.Len()
 }
