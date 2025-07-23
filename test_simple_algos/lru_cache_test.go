@@ -91,3 +91,16 @@ func TestLRUCacheGet(t *testing.T) {
 		t.Errorf("Get(3): expected (300, true), got (%v, %v)", v, ok)
 	}
 }
+
+func TestLRUCachePutUpdatesValue(t *testing.T) {
+	cache := simple_algos.NewLRUCache[int, string](2)
+	cache.Put(1, "one")
+	cache.Put(1, "uno") // update existing key
+
+	if got, ok := cache.Get(1); !ok || got != "uno" {
+		t.Errorf("After updating key=1, expected (\"uno\", true), got (%q, %v)", got, ok)
+	}
+	if length := cache.Len(); length != 1 {
+		t.Errorf("Expected length=1 after updating existing key, got %d", length)
+	}
+}

@@ -35,6 +35,7 @@ func (lruCache *LRUCache[Key, Value]) Put(key Key, value Value) {
 	if element, ok := lruCache.cache[key]; ok {
 		lruCache.list.MoveToFront(element)
 		element.Value = lruCacheEntry[Key, Value]{key, value}
+		return
 	}
 	// Delete last element if cache is full
 	if lruCache.list.Len() == lruCache.capacity {
