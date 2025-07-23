@@ -104,3 +104,40 @@ func TestLRUCachePutUpdatesValue(t *testing.T) {
 		t.Errorf("Expected length=1 after updating existing key, got %d", length)
 	}
 }
+
+func TestLRUCacheEmpty(t *testing.T) {
+	cache := simple_algos.NewLRUCache[int, int](1)
+	if got := cache.Len(); got != 0 {
+		t.Errorf("New cache.Len() = %d, want 0", got)
+	}
+	if _, ok := cache.Get(42); ok {
+		t.Errorf("Get on empty cache returned ok=true; want ok=false")
+	}
+	if _, ok := cache.Peek(42); ok {
+		t.Errorf("Peek on empty cache returned ok=true; want ok=false")
+	}
+}
+
+func TestLRUCacheGetMovesToFront(t *testing.T) {
+	cache := simple_algos.NewLRUCache[int, int](2)
+	cache.Put(1, 10)
+	cache.Put(2, 20)
+
+	// Access key=1, making it most‑recent
+	if v, ok := cache.Get(1); !ok || v != 10 {
+		t.Fatalf("Get(1) = (%v, %v), want (10, true)", v, ok)
+	}
+
+	// Insert 3 → should evict the LRU (which is now key=2)
+	cache.Put(3, 30)
+
+	if _, ok := cache.Get(2); ok {
+		t.Errorf("Expected key=2 to be evicted after Put(3), but Get(2) returned ok=true")
+	}
+	// Keys 1 and 3 should still be present
+	for _, tc := range []struct{ key, want int }{{1, 10}, {3, 30}} {
+		if v, ok := cache.Get(tc.key); !ok || v != tc.want {
+			t.Errorf("Get(%d) = (%v, %v), want (%d, true)", tc.key, v, ok, tc.want)
+		}
+	}
+}
