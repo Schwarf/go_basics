@@ -10,7 +10,7 @@ type ShardedLRUCache[K comparable, V any] struct {
 	hash   Hasher[K]
 }
 
-func newShardedLRUCache[K comparable, V any](totalCapacity int, shardCount int, h Hasher[K]) *ShardedLRUCache[K, V] {
+func NewShardedLRUCache[K comparable, V any](totalCapacity int, shardCount int, h Hasher[K]) *ShardedLRUCache[K, V] {
 	if totalCapacity <= 0 {
 		panic("ShardedLRU: totalCapacity must be > 0")
 	}
@@ -27,11 +27,8 @@ func newShardedLRUCache[K comparable, V any](totalCapacity int, shardCount int, 
 
 	for i := 0; i < shardCount; i++ {
 		capacity := perShard
-		if i == shardCount-1 {
-			capacity = remain
-		}
-		if capacity <= 0 {
-			capacity = 1
+		if i < remain {
+			capacity++
 		}
 		shards[i] = NewLRUCache[K, V](capacity)
 	}

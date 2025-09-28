@@ -168,7 +168,7 @@ func TestLRUCacheConcurrentAccess(t *testing.T) {
 		go func(id int) {
 			defer wg.Done()
 			for i := 0; i < nOps; i++ {
-				key := rand.Intn(100) // keys 0..99
+				key := rand.Intn(1000)
 				val := id*1000 + i
 				switch rand.Intn(3) {
 				case 0:
