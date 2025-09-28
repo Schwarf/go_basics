@@ -1,6 +1,8 @@
 package test_simple_algos
 
 import (
+	"math/rand"
+	"sync"
 	"testing"
 
 	"github.com/Schwarf/go_basics/simple_algos"
@@ -150,5 +152,37 @@ func TestLRUCacheGetMovesToFront(t *testing.T) {
 		if v, ok := cache.Get(tc.key); !ok || v != tc.want {
 			t.Errorf("Get(%d) = (%v, %v), want (%d, true)", tc.key, v, ok, tc.want)
 		}
+	}
+}
+
+func TestLRUCacheConcurrentAccess(t *testing.T) {
+	cache := simple_algos.NewLRUCache[int, int](50) // capacity 50
+	var wg sync.WaitGroup
+
+	nWorkers := 8
+	nOps := 10000000
+
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			for i := 0; i < nOps; i++ {
+				key := rand.Intn(100) // keys 0..99
+				val := id*1000 + i
+				switch rand.Intn(3) {
+				case 0:
+					cache.Put(key, val)
+				case 1:
+					cache.Get(key)
+				case 2:
+					cache.Remove(key)
+				}
+			}
+		}(w)
+	}
+	wg.Wait()
+
+	if got := cache.Len(); got > 50 {
+		t.Errorf("Len() = %d, exceeds capacity 50", got)
 	}
 }
