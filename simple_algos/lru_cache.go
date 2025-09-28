@@ -2,12 +2,14 @@ package simple_algos
 
 import (
 	"container/list"
+	"sync"
 )
 
 type LRUCache[Key comparable, Value any] struct {
 	capacity int
 	cache    map[Key]*list.Element
 	list     *list.List
+	mu       sync.RWMutex
 }
 
 type lruCacheEntry[Key comparable, Value any] struct {
@@ -27,6 +29,9 @@ func NewLRUCache[Key comparable, Value any](capacity int) *LRUCache[Key, Value] 
 
 func (lruCache *LRUCache[Key, Value]) Get(key Key) (Value, bool) {
 	// if element in the list move, it to front and return it
+	lruCache.mu.Lock()
+	defer lruCache.mu.Unlock()
+
 	if element, ok := lruCache.cache[key]; ok {
 		lruCache.list.MoveToFront(element)
 		return element.Value.(lruCacheEntry[Key, Value]).value, true
@@ -37,6 +42,8 @@ func (lruCache *LRUCache[Key, Value]) Get(key Key) (Value, bool) {
 
 func (lruCache *LRUCache[Key, Value]) Put(key Key, value Value) {
 	// if element already in the list move it to front
+	lruCache.mu.Lock()
+	defer lruCache.mu.Unlock()
 	if element, ok := lruCache.cache[key]; ok {
 		lruCache.list.MoveToFront(element)
 		element.Value = lruCacheEntry[Key, Value]{key, value}
@@ -56,6 +63,8 @@ func (lruCache *LRUCache[Key, Value]) Put(key Key, value Value) {
 }
 
 func (lruCache *LRUCache[Key, Value]) Remove(key Key) {
+	lruCache.mu.Lock()
+	defer lruCache.mu.Unlock()
 	if element, ok := lruCache.cache[key]; ok {
 		lruCache.list.Remove(element)
 		delete(lruCache.cache, key)
@@ -63,6 +72,8 @@ func (lruCache *LRUCache[Key, Value]) Remove(key Key) {
 }
 
 func (lruCache *LRUCache[Key, Value]) Peek(key Key) (Value, bool) {
+	lruCache.mu.RLock()
+	defer lruCache.mu.RUnlock()
 	if element, ok := lruCache.cache[key]; ok {
 		return element.Value.(lruCacheEntry[Key, Value]).value, true
 	}
@@ -71,5 +82,7 @@ func (lruCache *LRUCache[Key, Value]) Peek(key Key) (Value, bool) {
 }
 
 func (lruCache *LRUCache[Key, Value]) Len() int {
+	lruCache.mu.RLock()
+	defer lruCache.mu.RUnlock()
 	return lruCache.list.Len()
 }
