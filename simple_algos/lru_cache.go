@@ -1,6 +1,8 @@
 package simple_algos
 
-import "container/list"
+import (
+	"container/list"
+)
 
 type LRUCache[Key comparable, Value any] struct {
 	capacity int
@@ -14,6 +16,9 @@ type lruCacheEntry[Key comparable, Value any] struct {
 }
 
 func NewLRUCache[Key comparable, Value any](capacity int) *LRUCache[Key, Value] {
+	if capacity <= 0 {
+		panic("LRUCache: capacity must be > 0")
+	}
 	return &LRUCache[Key, Value]{
 		capacity: capacity,
 		cache:    make(map[Key]*list.Element),

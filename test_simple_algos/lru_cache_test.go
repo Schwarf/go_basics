@@ -1,9 +1,20 @@
 package test_simple_algos
 
 import (
-	"github.com/Schwarf/go_basics/simple_algos"
 	"testing"
+
+	"github.com/Schwarf/go_basics/simple_algos"
 )
+
+func TestNewLRUCacheNegativeCapacity(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected panic for negative capacity, got none")
+		}
+	}()
+
+	_ = simple_algos.NewLRUCache[float64, int](-1)
+}
 
 func TestLRUCacheLen(t *testing.T) {
 	length := 3
