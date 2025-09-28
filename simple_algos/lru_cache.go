@@ -86,3 +86,7 @@ func (lruCache *LRUCache[Key, Value]) Len() int {
 	defer lruCache.mu.RUnlock()
 	return lruCache.list.Len()
 }
+
+func (lru *LRUCache[Key, Value]) Capacity() int {
+	return lru.capacity
+}

@@ -1,6 +1,7 @@
 package test_simple_algos
 
 import (
+	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
@@ -184,5 +185,22 @@ func TestLRUCacheConcurrentAccess(t *testing.T) {
 
 	if got := cache.Len(); got > 50 {
 		t.Errorf("Len() = %d, exceeds capacity 50", got)
+	}
+}
+
+func TestLRUCacheCapacity(t *testing.T) {
+	cap := 5
+	cache := simple_algos.NewLRUCache[int, string](cap)
+
+	if got := cache.Capacity(); got != cap {
+		t.Errorf("Capacity() = %d, want %d", got, cap)
+	}
+
+	// Fill it and ensure Len ≤ Capacity
+	for i := 0; i < 10; i++ {
+		cache.Put(i, fmt.Sprintf("val-%d", i))
+	}
+	if cache.Len() > cache.Capacity() {
+		t.Errorf("Len() = %d exceeds Capacity() = %d", cache.Len(), cache.Capacity())
 	}
 }
